@@ -1,0 +1,19 @@
+{
+    "name": "manifest",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "gen:types": "supabase gen types typescript --local > src/database.types.ts",
+        "demo": "tsx src/demo.ts",
+        "env:local": "node scripts/switch-env.mjs local",
+        "env:dev": "node scripts/switch-env.mjs dev"
+    },
+    "dependencies": {
+        "@supabase/supabase-js": "^2.106.2"
+    },
+    "devDependencies": {
+        "@types/node": "^25.9.1",
+        "tsx": "^4.22.3",
+        "typescript": "^6.0.3"
+    }
+}

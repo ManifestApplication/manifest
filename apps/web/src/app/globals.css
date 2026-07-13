@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+/* HALINEST brand: "ledger paper and ink". Signal blue is the only loud color;
+   Verified green for confirmations. Flat surfaces, borders over shadows. */
+@theme {
+  --color-paper: #fafaf7; /* page background */
+  --color-parchment: #f1efe8; /* card / muted surface */
+  --color-ink: #0a0a0b; /* primary text */
+  --color-margin: #5f5e5a; /* secondary text */
+  --color-signal: #185fa5; /* links, primary CTAs, the dot */
+  --color-verified: #0f6e56; /* confirmation / success */
+  --color-border: #e5e2d9; /* parchment darkened ~8% */
+
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-plex-mono);
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
