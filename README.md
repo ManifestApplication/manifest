@@ -70,6 +70,23 @@ supabase db reset
 pnpm --filter web dev          # → http://localhost:3000
 ```
 
+### …or run the web app in Docker (hot reload)
+
+Same backend (Supabase via the CLI, steps 1–2 above), but the Next.js app runs in
+a container instead of `pnpm dev`. Requires `apps/web/.env.local` to be filled in
+(copy from `.env.example`; the Supabase URL/key come from `supabase status`).
+
+```bash
+supabase start                 # (+ `supabase db reset` first run) — same as above
+docker compose up web          # build + run the app → http://localhost:3000
+```
+
+The container reaches the host's Supabase via `host.docker.internal` while the
+browser uses `127.0.0.1` — handled automatically by `SUPABASE_INTERNAL_URL`
+(see [docker-compose.yml](docker-compose.yml) and
+[apps/web/src/lib/supabase/url.ts](apps/web/src/lib/supabase/url.ts)). Source is
+bind-mounted, so edits hot-reload. Stop with `docker compose down`.
+
 **Seed logins** (all password `password123`): `admin@halinest.test`,
 `budi@halinest.test` (manufacturer), `warungA@halinest.test`, `warungB@halinest.test`,
 `kurir@halinest.test` (distributor).

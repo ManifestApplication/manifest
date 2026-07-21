@@ -1,13 +1,14 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import type { Database } from "./database.types";
+import { serverSupabaseUrl } from "./url";
 
 // Used in Server Components / route handlers. Reads the session from the
 // request's cookies, so RLS knows who's logged in — server-side.
 export async function createClient() {
     const cookieStore = await cookies();
     return createServerClient<Database>(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        serverSupabaseUrl(),
         process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
         {
             cookies: {

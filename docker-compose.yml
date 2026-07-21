@@ -1,0 +1,47 @@
+# Local development: run the Next.js web app in Docker with hot reload.
+#
+# The Supabase backend (Postgres/Auth/API) is NOT defined here — it runs on the
+# host via the Supabase CLI, which manages its own Docker containers:
+#
+#     supabase start          # first bring up the backend
+#     supabase db reset       # (first run / after migration or seed changes)
+#     docker compose up web   # then this app  ->  http://localhost:3000
+#
+# Why two URLs for one Supabase instance:
+#   - The BROWSER runs on your Mac, so it reaches Supabase at 127.0.0.1:54321
+#     (NEXT_PUBLIC_SUPABASE_URL, from apps/web/.env.local).
+#   - This CONTAINER reaches the host's Supabase via host.docker.internal:54321
+#     (SUPABASE_INTERNAL_URL, used only by server-side code — see
+#     apps/web/src/lib/supabase/url.ts).
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile.dev
+    ports:
+      - "3000:3000"
+    env_file:
+      - apps/web/.env.local
+    environment:
+      # Server-side (inside the container) route to the host's Supabase.
+      SUPABASE_INTERNAL_URL: http://host.docker.internal:54321
+      # Turbopack/Next file watching across the bind mount.
+      WATCHPACK_POLLING: "true"
+    extra_hosts:
+      # Make host.docker.internal resolve on Linux too (Docker Desktop provides
+      # it automatically, but this keeps the file portable).
+      - "host.docker.internal:host-gateway"
+    volumes:
+      # Bind-mount the repo for hot reload...
+      - .:/repo
+      # ...but keep the image's installed dependencies (pnpm workspace layout).
+      - web_root_node_modules:/repo/node_modules
+      - web_app_node_modules:/repo/apps/web/node_modules
+      # Keep the Next.js build cache off the slow bind mount.
+      - web_next_cache:/repo/apps/web/.next
+
+volumes:
+  web_root_node_modules:
+  web_app_node_modules:
+  web_next_cache:

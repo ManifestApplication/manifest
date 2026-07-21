@@ -1,0 +1,16 @@
+# Keep the build context small and avoid leaking host state into the image.
+# (Source is bind-mounted at runtime for dev, so it need not be in the context.)
+**/node_modules
+**/.next
+**/out
+**/build
+**/.turbo
+**/coverage
+.git
+.DS_Store
+**/.DS_Store
+**/*.tsbuildinfo
+supabase/.branches
+supabase/.temp
+notes
+assets

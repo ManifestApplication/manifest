@@ -1,0 +1,27 @@
+# Development image for the Next.js web app (hot reload via `next dev`).
+# The Supabase backend is NOT in here — it runs on the host through the Supabase
+# CLI (`supabase start`), and this container reaches it via host.docker.internal.
+#
+# Build context is the REPO ROOT (see docker-compose.yml) because this is a pnpm
+# workspace: the lockfile and workspace manifest live at the root.
+FROM node:22-bookworm-slim
+
+# pnpm ships with Node via corepack; pin nothing here so the repo's packageManager
+# field (if any) / lockfile drive the version.
+RUN corepack enable
+
+WORKDIR /repo
+
+# Install dependencies against the manifests only, so this layer is cached and
+# only re-runs when a package.json / lockfile changes. The actual source is
+# bind-mounted at runtime (see docker-compose.yml) for hot reload.
+COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
+COPY apps/web/package.json apps/web/package.json
+RUN pnpm install --frozen-lockfile
+
+# Source is mounted over /repo at runtime; node_modules are kept in named volumes
+# so the install above survives the mount. Next dev binds 0.0.0.0 so the port is
+# reachable from the host.
+EXPOSE 3000
+WORKDIR /repo/apps/web
+CMD ["pnpm", "dev", "--hostname", "0.0.0.0", "--port", "3000"]
